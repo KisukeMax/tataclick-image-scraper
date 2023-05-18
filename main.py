@@ -30,21 +30,24 @@ def download_image(url ,save_path, pid_number, image_number, chunk_size=128):
 
 df = pd.read_excel("listing_id.xlsx")
 for row_number , row in tqdm(df.iterrows(), total=df.shape[0]):
-    listing_id = str(row.get("Listing ID"))
-    listing_sku = str(row.get("SKU code"))
-    s = HTMLSession()
-    url = f"https://www.tatacliq.com/marketplacewebservices/v2/mpl/products/productDetails/{listing_id}?isPwa=true&isMDE=true"
-
-    r = s.get(url)
-    jb = r.json()
-    for n , img_lists in enumerate(jb.get("galleryImagesList")):
-        # print(img_lists)
-        for img in img_lists.get("galleryImages"):
-            # print(img.get("key"))
-            if img.get("key") == "superZoom":
-                img_url = "https:" +  img.get("value")
-                img_name = listing_sku
-                download_image(img_url,"images", img_name,n+1)
-                df.at[row_number,"img_" + (str(n))] = img_url
-
+    try:
+        listing_id = str(row.get("Listing ID"))
+        listing_sku = str(row.get("SKU code"))
+        print(listing_id)
+        s = HTMLSession()
+        url = f"https://www.tatacliq.com/marketplacewebservices/v2/mpl/products/productDetails/{listing_id}?isPwa=true&isMDE=true"
+        print(url)
+        r = s.get(url)
+        jb = r.json()
+        for n , img_lists in enumerate(jb.get("galleryImagesList")):
+            # print(img_lists)
+            for img in img_lists.get("galleryImages"):
+                # print(img.get("key"))
+                if img.get("key") == "superZoom":
+                    img_url = "https:" +  img.get("value")
+                    img_name = listing_sku
+                    download_image(img_url,"images", img_name,n+1)
+                    df.at[row_number,"img_" + (str(n))] = img_url
+    except:
+        pass
 df.to_excel("results.xlsx", index=False)
