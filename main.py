@@ -10,12 +10,9 @@ def download_image(url ,save_path, pid_number, image_number, chunk_size=128):
         os.mkdir(save_path)
     
     r = requests.get(url,  stream=True)
-    # print(r.status_code)
     if r.status_code == 404:
         return "no file lol"
-        # print(r.status_code)
     else:
-        # print(r.status_code)
         a = urlparse(url)
         
         # get orignal file name
@@ -33,16 +30,12 @@ for row_number , row in tqdm(df.iterrows(), total=df.shape[0]):
     try:
         listing_id = str(row.get("Listing ID"))
         listing_sku = str(row.get("SKU code"))
-        print(listing_id)
         s = HTMLSession()
         url = f"https://www.tatacliq.com/marketplacewebservices/v2/mpl/products/productDetails/{listing_id}?isPwa=true&isMDE=true"
-        print(url)
         r = s.get(url)
         jb = r.json()
         for n , img_lists in enumerate(jb.get("galleryImagesList")):
-            # print(img_lists)
             for img in img_lists.get("galleryImages"):
-                # print(img.get("key"))
                 if img.get("key") == "superZoom":
                     img_url = "https:" +  img.get("value")
                     img_name = listing_sku
